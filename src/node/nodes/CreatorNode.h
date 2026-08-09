@@ -24,8 +24,8 @@ class CreatorNode : public Node
 
                 for (int i = 0; i < newBuffer->size; i++) {
                     newBuffer->pixels[i] = Color4(
-                        255,
-                        255,
+                        56,
+                        159,
                         255,
                         255
                     );

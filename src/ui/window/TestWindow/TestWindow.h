@@ -21,12 +21,20 @@ namespace UI
             {
                 texture = SDL_CreateTexture(
                     ui->renderer,
-                    SDL_PIXELFORMAT_ARGB32,
+                    SDL_PIXELFORMAT_ARGB8888,
                     SDL_TEXTUREACCESS_STREAMING,
                     1920,
                     1080
                 );
             };
+
+            ~TestWindow()
+            {
+                if (texture != nullptr)
+                {
+                    SDL_DestroyTexture(texture);
+                }
+            }
 
             virtual void Update() override
             {
@@ -35,13 +43,13 @@ namespace UI
                     Buffer4* buffer = ui->GetCore()->GetOutput();
                     real_buffer = buffer->ToUint32Buffer();
 
-                    SDL_Rect* rect = new SDL_Rect();
-                    rect->x = 0;
-                    rect->y = 0;
-                    rect->w = buffer->width;
-                    rect->h = buffer->height;
+                    SDL_Rect rect;
+                    rect.x = 0;
+                    rect.y = 0;
+                    rect.w = buffer->width;
+                    rect.h = buffer->height;
                     
-                    SDL_UpdateTexture(texture, rect, real_buffer.data(), 4);
+                    SDL_UpdateTexture(texture, &rect, real_buffer.data(), 4);
                     
                     ui->GetCore()->isViewportDirty = false;
                 }

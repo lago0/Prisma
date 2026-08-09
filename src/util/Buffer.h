@@ -14,7 +14,7 @@ class Buffer3
             height(height),
             size(width * height)
         {
-            pixels.reserve(size);
+            pixels.resize(size);
         };
 
         Color3 pixelAt(int position)
@@ -26,6 +26,20 @@ class Buffer3
         {
             int position = x + y * width;
             return pixelAt(position);
+        };
+
+        std::vector<uint32_t> ToUint32Buffer()
+        {
+            auto buffer = std::vector<uint32_t>();
+            buffer.resize(pixels.size());
+
+            for (int i = 0; i < pixels.size(); i++)
+            {
+                Color3 pixel = pixels[i];
+                buffer[i] = pixel.b | (pixel.g << 8) | (pixel.r << 16);
+            }
+
+            return buffer;
         };
 
         int width;
@@ -60,15 +74,12 @@ class Buffer4
         std::vector<uint32_t> ToUint32Buffer()
         {
             auto buffer = std::vector<uint32_t>();
+            buffer.resize(pixels.size());
 
-            for (Color4 pixel : pixels)
+            for (int i = 0; i < pixels.size(); i++)
             {
-                buffer.push_back(
-                    pixel.b |
-                    (pixel.g << 8) |
-                    (pixel.r << 16) |
-                    (pixel.a << 24)
-                );
+                Color4 pixel = pixels[i];
+                buffer[i] = pixel.b | (pixel.g << 8) | (pixel.r << 16) | (pixel.a << 24);
             }
 
             return buffer;
