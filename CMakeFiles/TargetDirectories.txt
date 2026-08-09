@@ -1,0 +1,3 @@
+/home/lago/proyectos/imageeditor/CMakeFiles/ImageEditor.dir
+/home/lago/proyectos/imageeditor/CMakeFiles/edit_cache.dir
+/home/lago/proyectos/imageeditor/CMakeFiles/rebuild_cache.dir

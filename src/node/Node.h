@@ -1,0 +1,41 @@
+#pragma once
+
+#include <unordered_map>
+#include <vector>
+
+#include "enums/InOutType.h"
+#include "util/signal/Signal.h"
+#include "enums/NodeUpdateType.h"
+#include "util/Buffer.h"
+
+class NodeInput;
+class Core;
+
+class Node
+{
+    public:
+        Node(Core* core, InOutType type);
+        ~Node();
+
+        virtual void ConnectOutput(NodeInput* nodeInput);
+        virtual void ConnectInput(NodeInput* nodeInput, Node* node);
+
+        virtual void DisconnectOutput(NodeInput* nodeInput);
+        virtual void DisconnectInput(NodeInput* nodeInput);
+
+        virtual void* GetOutput();
+
+        virtual void SetDirty();
+
+        Buffer4* cachedBuffer = nullptr;
+        bool isDirty;
+
+        std::unordered_map<int, NodeInput*> nodeInputs;
+        std::vector<NodeInput*> nodeOutputs;
+        bool outputEnabled = true;
+
+        InOutType outType;
+        Util::Signal<NodeUpdateType> onNodeUpdated;
+
+        Core* core;
+};
