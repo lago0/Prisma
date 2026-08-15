@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "node/NodeWorkspace.h"
 #include "util/signal/Signal.h"
 
 class LayerManager;
@@ -22,6 +23,10 @@ class Layer {
 
         void SetName(std::string new_name);
         std::string GetName() const;
+
+        Buffer4* GetViewportOutput();
+
+        NodeWorkspace* nodeWorkspace;
 
         Util::Signal<LayerUpdateType>* onLayerUpdated;
 

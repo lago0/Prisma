@@ -14,6 +14,7 @@ add_executable(Prisma
     src/node/Node.cpp
     src/node/NodeInput.cpp
     src/node/NodeWorkspace.cpp
+    src/compositor/Compositor.cpp
 
     src/ui/UI.cpp
     src/ui/Window.cpp

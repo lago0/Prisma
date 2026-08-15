@@ -1,10 +1,20 @@
 #include "NodeWorkspace.h"
 #include "Node.h"
 #include "core/Core.h"
+#include "nodes/ImageOut.h"
+#include "nodes/ImageIn.h"
+#include "compositor/Compositor.h"
 
 NodeWorkspace::NodeWorkspace(Core* core) :
     core(core)
 {
+    this->imageOut = new ImageOut();
+    this->AddNode(this->imageOut);
+
+    ImageIn* imageIn = new ImageIn();
+    this->AddNode(imageIn);
+    
+    imageIn->ConnectOutput(imageOut->nodeInputs.at(0));
 }
 
 NodeWorkspace::~NodeWorkspace()
@@ -46,12 +56,13 @@ void NodeWorkspace::AddNode(Node* node)
     if (!HasNode(node))
     {
         nodes.push_back(node);
+        node->NodeConnectedToWorkspace(this);
     }
 }
 
 void NodeWorkspace::RemoveNode(Node* node)
 {
-    if (HasNode(node))
+    if (HasNode(node) && node != imageOut)
     {
         int index = GetNodeIndex(node);
 
@@ -59,5 +70,27 @@ void NodeWorkspace::RemoveNode(Node* node)
         {
             nodes.erase(nodes.begin() + index);
         }
+        node->NodeDisconnectedFromWorkspace();
     }
+}
+
+Node* NodeWorkspace::GetOutputNode()
+{
+    return imageOut;
+}
+
+Buffer4* NodeWorkspace::GetViewportOutput()
+{
+    if (isDirty || cachedBuffer == nullptr)
+    {
+        cachedBuffer = static_cast<Buffer4*>(GetOutputNode()->GetViewportOutput());
+    }
+
+    return cachedBuffer;
+}
+
+void NodeWorkspace::SetDirty()
+{
+    isDirty = true;
+    core->GetCompositor()->SetDirty();
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <util/Buffer.h>
+
 #include <vector>
 
 class Node;
@@ -16,8 +18,18 @@ class NodeWorkspace
 
         void AddNode(Node* node);
         void RemoveNode(Node* node);
+    
+        Node* GetOutputNode();
+
+        Buffer4* GetViewportOutput();
+
+        void SetDirty();
         
-        Core* core;
+        bool isDirty = true;
+        Buffer4* cachedBuffer = nullptr;
 
         std::vector<Node*> nodes;
+        Node* imageOut;
+
+        Core* core;
 };

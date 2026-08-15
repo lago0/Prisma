@@ -16,6 +16,10 @@ UI::UI::UI(SDL_Window* main_window, SDL_Renderer* renderer, Core* core) :
     std::shared_ptr<Window> window = std::make_shared<TestWindow>(this);
 
     OpenWindow(window);
+
+    window = std::make_shared<LayerWindow>(this);
+
+    OpenWindow(window);
 }
 
 Core* UI::UI::GetCore()

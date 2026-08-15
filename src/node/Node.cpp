@@ -2,8 +2,7 @@
 #include "NodeInput.h"
 #include "core/Core.h"
 
-Node::Node(Core* core, InOutType type) : 
-    core(core),
+Node::Node(InOutType type) : 
     outType(type),
     isDirty(true)
 {
@@ -84,6 +83,11 @@ void* Node::GetOutput()
     return nullptr;
 }
 
+void* Node::GetViewportOutput()
+{
+    return nullptr;
+}
+
 void Node::SetDirty()
 {
     if (isDirty) return;
@@ -94,4 +98,14 @@ void Node::SetDirty()
     {
         nodeInput->GetNode()->SetDirty();
     }
+}
+
+void Node::NodeConnectedToWorkspace(NodeWorkspace* workspace)
+{
+    nodeWorkspace = workspace;
+}
+
+void Node::NodeDisconnectedFromWorkspace()
+{
+    nodeWorkspace = nullptr;
 }

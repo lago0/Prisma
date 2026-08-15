@@ -1,8 +1,8 @@
 #pragma once
 
-#include "layer/LayerManager.h"
-
 class Buffer4;
+class LayerManager;
+class Compositor;
 
 class Core
 {
@@ -13,7 +13,8 @@ class Core
 
         Buffer4* GetOutput();
 
-        LayerManager* layerManager;
+        Compositor* GetCompositor();
 
-        bool isViewportDirty = true;
+        LayerManager* layerManager;
+        Compositor* compositor;
 };

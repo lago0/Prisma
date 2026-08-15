@@ -9,6 +9,7 @@
 #include "util/Buffer.h"
 #include "ui/UI.h"
 #include "core/Core.h"
+#include "compositor/Compositor.h"
 
 namespace UI
 {
@@ -38,9 +39,10 @@ namespace UI
 
             virtual void Update() override
             {
-                if (ui->GetCore()->isViewportDirty)
+                Buffer4* buffer = ui->GetCore()->GetCompositor()->GetComposedViewportBuffer();
+
+                if (buffer != nullptr)
                 {
-                    Buffer4* buffer = ui->GetCore()->GetOutput();
                     real_buffer = buffer->ToUint32Buffer();
 
                     SDL_Rect rect;
@@ -49,9 +51,7 @@ namespace UI
                     rect.w = buffer->width;
                     rect.h = buffer->height;
                     
-                    SDL_UpdateTexture(texture, &rect, real_buffer.data(), 4);
-                    
-                    ui->GetCore()->isViewportDirty = false;
+                    SDL_UpdateTexture(texture, &rect, real_buffer.data(), 4*buffer->width);
                 }
             };
 

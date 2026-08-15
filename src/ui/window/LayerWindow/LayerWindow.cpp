@@ -132,8 +132,6 @@ void UI::LayerWindow::OnLayerUpdateCallback(Layer* layer, LayerUpdateType layerU
 
 void UI::LayerWindow::OnLayerDeletedCallback(int index)
 {
-    std::cout << "lol";
-
     LayerView* layerView = layerViews.at(index);
 
     layerViews.erase(layerViews.begin() + index);

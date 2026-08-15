@@ -7,6 +7,7 @@
 #include "util/signal/Signal.h"
 #include "enums/NodeUpdateType.h"
 #include "util/Buffer.h"
+#include "NodeWorkspace.h"
 
 class NodeInput;
 class Core;
@@ -14,7 +15,7 @@ class Core;
 class Node
 {
     public:
-        Node(Core* core, InOutType type);
+        Node(InOutType type);
         ~Node();
 
         virtual void ConnectOutput(NodeInput* nodeInput);
@@ -24,11 +25,15 @@ class Node
         virtual void DisconnectInput(NodeInput* nodeInput);
 
         virtual void* GetOutput();
+        virtual void* GetViewportOutput();
 
         virtual void SetDirty();
 
+        virtual void NodeConnectedToWorkspace(NodeWorkspace* nodeWorkspace);
+        virtual void NodeDisconnectedFromWorkspace();
+
         Buffer4* cachedBuffer = nullptr;
-        bool isDirty;
+        bool isDirty = true;
 
         std::unordered_map<int, NodeInput*> nodeInputs;
         std::vector<NodeInput*> nodeOutputs;
@@ -37,5 +42,5 @@ class Node
         InOutType outType;
         Util::Signal<NodeUpdateType> onNodeUpdated;
 
-        Core* core;
+        NodeWorkspace* nodeWorkspace;
 };

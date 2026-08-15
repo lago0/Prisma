@@ -8,7 +8,7 @@
 
 class LayerManager {
     public:
-        LayerManager();
+        LayerManager(Core* core);
         ~LayerManager();
 
         Layer* GetLayerByIndex(int index);
@@ -21,6 +21,8 @@ class LayerManager {
 
         void DeleteLayer(int index);
 
+        Core* GetCore();
+
         std::string ChooseInitialLayerName();
 
         Util::Signal<Layer*>* onLayerCreated;
@@ -28,4 +30,6 @@ class LayerManager {
         Util::Signal<int>* onLayerDeleted;
 
         std::vector<Layer*> layers;
+
+        Core* core;
 };

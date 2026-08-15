@@ -7,14 +7,17 @@
 #include "node/Node.h"
 #include "node/NodeInput.h"
 #include "node/NodeWorkspace.h"
-#include "node/nodes/CreatorNode.h"
-#include "node/nodes/TestNode.h"
+#include "node/nodes/ImageIn.h"
+#include "node/nodes/ImageOut.h"
 #include "node/enums/InOutType.h"
+#include "layer/LayerManager.h"
+#include "compositor/Compositor.h"
 
-static Node* node;
+static NodeWorkspace* nodeWorkspace;
 
 Core::Core() :
-    layerManager(new LayerManager())
+    layerManager(new LayerManager(this)),
+    compositor(new Compositor(this))
 {
     std::cout << "Initialized\n";
 }
@@ -22,24 +25,20 @@ Core::Core() :
 Core::~Core()
 {
     delete layerManager;
+    delete compositor;
 }
 
 void Core::Start()
 {
-    NodeWorkspace* workspace = new NodeWorkspace(this);
-
-    Node* creatorNode = new CreatorNode(this);
-    Node* testNode = new TestNode(this);
-
-    workspace->AddNode(creatorNode);
-    workspace->AddNode(testNode);
-
-    creatorNode->ConnectOutput(testNode->nodeInputs[0]);
-
-    node = testNode;
 }
 
 Buffer4* Core::GetOutput()
 {
-    return static_cast<Buffer4*>(node->GetOutput());
+    //return static_cast<Buffer4*>(nodeWorkspace->GetOutput());
+    return nullptr;
+}
+
+Compositor* Core::GetCompositor()
+{
+    return compositor;
 }

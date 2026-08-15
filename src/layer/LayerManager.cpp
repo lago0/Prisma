@@ -3,7 +3,8 @@
 
 #include "LayerManager.h"
 
-LayerManager::LayerManager() :
+LayerManager::LayerManager(Core* core) :
+    core(core),
     onLayerCreated(new Util::Signal<Layer*>()),
     onLayerUpdated(new Util::Signal<Layer*, LayerUpdateType>()),
     onLayerDeleted(new Util::Signal<int>())
@@ -64,6 +65,8 @@ Layer* LayerManager::CreateLayer()
     
     onLayerCreated->Emit(layer);
 
+    layer->nodeWorkspace->SetDirty();
+
     return layer;
 }
 
@@ -111,4 +114,9 @@ std::string LayerManager::ChooseInitialLayerName()
 
         number++;
     }
+}
+
+Core* LayerManager::GetCore()
+{
+    return core;
 }
