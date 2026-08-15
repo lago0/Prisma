@@ -4,9 +4,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-project(ImageEditor)
+project(Prisma)
 
-add_executable(ImageEditor
+add_executable(Prisma
     src/main.cpp
     src/core/Core.cpp
     src/layer/LayerManager.cpp
@@ -28,11 +28,11 @@ add_executable(ImageEditor
     lib/imgui_demo.cpp
 )
 
-target_include_directories(ImageEditor PRIVATE
+target_include_directories(Prisma PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/include
 )
 
 find_package(SDL3 REQUIRED)
 
-target_link_libraries(ImageEditor PRIVATE SDL3::SDL3)
+target_link_libraries(Prisma PRIVATE SDL3::SDL3)
