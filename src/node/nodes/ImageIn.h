@@ -52,4 +52,9 @@ class ImageIn : public Node
             }
             return static_cast<void*>(cachedBuffer);
         };
+
+        virtual std::string visualName() const override
+        {
+            return "ImageIn";
+        }
 };

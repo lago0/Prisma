@@ -19,6 +19,7 @@ add_executable(Prisma
     src/ui/UI.cpp
     src/ui/Window.cpp
     src/ui/window/LayerWindow/LayerWindow.cpp
+    src/ui/window/NodeViewer/NodeViewer.cpp
 
     lib/imgui_impl_sdlrenderer3.cpp
     lib/imgui_draw.cpp

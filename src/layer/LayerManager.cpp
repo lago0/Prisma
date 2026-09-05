@@ -7,7 +7,7 @@ LayerManager::LayerManager(Core* core) :
     core(core),
     onLayerCreated(new Util::Signal<Layer*>()),
     onLayerUpdated(new Util::Signal<Layer*, LayerUpdateType>()),
-    onLayerDeleted(new Util::Signal<int>())
+    onLayerDeleted(new Util::Signal<Layer*>())
 {
 }
 
@@ -89,14 +89,14 @@ void LayerManager::DeleteLayer(int index)
 {
     Layer* layer = layers.at(index);
     layers.erase(layers.begin() + index);
-    
+  
     delete layer;
-    
-    for (int i = index; i < layers.size(); i++) {
+
+    for (int i = 0; i < layers.size(); i++) {
         layers[i]->SetIndex(i);
     }
     
-    onLayerDeleted->Emit(index);
+    onLayerDeleted->Emit(layer);
 }
 
 std::string LayerManager::ChooseInitialLayerName() 

@@ -74,4 +74,9 @@ class ImageOut : public Node
                 nodeWorkspace->SetDirty();
             }
         };
+
+        virtual std::string visualName() const override
+        {
+            return "ImageOut";
+        }
 };

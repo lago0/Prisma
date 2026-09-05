@@ -1,6 +1,7 @@
 #include <imgui.h>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include "LayerWindow.h"
 #include "ui/UI.h"
@@ -26,10 +27,10 @@ UI::LayerWindow::LayerWindow(UI* ui) :
         this->OnLayerUpdateCallback(layer, layerUpdateType);
     });
 
-    layerManager->onLayerDeleted->Connect([this](int index)
+    layerManager->onLayerDeleted->Connect([this](Layer* layer)
     {
-        std::cout << "Layer Deleted: " << index << std::endl;
-        this->OnLayerDeletedCallback(index);
+        std::cout << "Layer Deleted: " << layer->GetName() << std::endl;
+        this->OnLayerDeletedCallback(layer);
     });
 
     std::cout << "Layers count: " << layerManager->layers.size() << std::endl;
@@ -39,6 +40,11 @@ UI::LayerWindow::LayerWindow(UI* ui) :
         std::cout << "Layer index loop: " << i << std::endl;
         OnLayerCreatedCallback(layerManager->layers.at(i));
     }
+
+    layerManager->onLayerCreated->Connect([this](Layer* layer)
+    {
+        this->ui->SetSelectedLayer(layer);
+    });
 }
 
 void UI::LayerWindow::Update()
@@ -65,10 +71,29 @@ void UI::LayerWindow::Render()
 
         std::string text = std::to_string(layerView->layer->GetIndex()) + " " + layerView->layer->GetName();
 
+        bool wasSelected = ui->selectedLayer == layerView->layer;
+        
+        if (wasSelected)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.45f, 0.9f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.1f, 0.55f, 1.0f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.35f, 0.75f, 1.0f));
+        }
+
         if (ImGui::Button(text.c_str(), ImVec2(ImGui::GetWindowSize()[0] - 10, 50)))
+        {
+            ui->SetSelectedLayer(layerView->layer);
+        }
+
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
         {
             selectedIndex = layerView->layer->GetIndex();
             //deleteIndex = layerView->layer->GetIndex();
+        }
+
+        if (wasSelected)
+        {
+            ImGui::PopStyleColor(3);
         }
     }
 
@@ -79,8 +104,6 @@ void UI::LayerWindow::Render()
 
     if (ImGui::BeginPopup("LayerPopup"))
     {
-        ImGui::Selectable("Duplicate Layer");
-        
         if (ImGui::Selectable("Delete Layer"))
         {
             deleteIndex = selectedIndex;
@@ -130,11 +153,13 @@ void UI::LayerWindow::OnLayerUpdateCallback(Layer* layer, LayerUpdateType layerU
     // Handle updates
 }
 
-void UI::LayerWindow::OnLayerDeletedCallback(int index)
+void UI::LayerWindow::OnLayerDeletedCallback(Layer* layer)
 {
-    LayerView* layerView = layerViews.at(index);
-
-    layerViews.erase(layerViews.begin() + index);
-
-    delete layerView;
+    for (int i = 0; i < layerViews.size(); i++)
+    {
+        if (layerViews[i]->layer == layer)
+        {
+            layerViews.erase(layerViews.begin() + i);
+        }
+    }
 }

@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 #include "enums/InOutType.h"
 #include "util/signal/Signal.h"
@@ -43,4 +44,9 @@ class Node
         Util::Signal<NodeUpdateType> onNodeUpdated;
 
         NodeWorkspace* nodeWorkspace;
+
+        virtual std::string visualName() const
+        {
+            return "Node";
+        }
 };

@@ -23,7 +23,7 @@ namespace UI
 
             virtual void OnLayerCreatedCallback(Layer* layer);
             virtual void OnLayerUpdateCallback(Layer* layer, LayerUpdateType layerUpdateType);
-            virtual void OnLayerDeletedCallback(int index);
+            virtual void OnLayerDeletedCallback(Layer* layer);
 
             std::vector<LayerView*> layerViews;
 

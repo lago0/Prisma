@@ -27,7 +27,7 @@ class LayerManager {
 
         Util::Signal<Layer*>* onLayerCreated;
         Util::Signal<Layer*, LayerUpdateType>* onLayerUpdated;
-        Util::Signal<int>* onLayerDeleted;
+        Util::Signal<Layer*>* onLayerDeleted;
 
         std::vector<Layer*> layers;
 

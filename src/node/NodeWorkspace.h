@@ -1,6 +1,7 @@
 #pragma once
 
 #include <util/Buffer.h>
+#include <util/signal/Signal.h>
 
 #include <vector>
 
@@ -32,4 +33,7 @@ class NodeWorkspace
         Node* imageOut;
 
         Core* core;
+
+        Util::Signal<NodeWorkspace*, Node*>* onNodeCreated;
+        Util::Signal<NodeWorkspace*, Node*>* onNodeDeleted;
 };

@@ -58,13 +58,21 @@ namespace UI
             virtual void Render() override
             {
                 ImTextureID texture_id = (ImTextureID)(intptr_t)texture;
-                ImVec2 size = ImVec2(320.0f, 240.0f); 
+
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
                 ImGui::Begin("Viewport");
+
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                ImVec2 size = ImVec2(windowSize.y * (texture->w / texture->h), windowSize.y); 
+
+                ImGui::SetCursorPosX(windowSize.x / 2 - size.x / 2);
                 
                 ImGui::Image(texture_id, size);
 
                 ImGui::End();
+
+                ImGui::PopStyleVar();
             };
 
             std::vector<uint32_t> real_buffer;

@@ -6,7 +6,9 @@
 #include "compositor/Compositor.h"
 
 NodeWorkspace::NodeWorkspace(Core* core) :
-    core(core)
+    core(core),
+    onNodeCreated(new Util::Signal<NodeWorkspace*, Node*>()),
+    onNodeDeleted(new Util::Signal<NodeWorkspace*, Node*>())
 {
     this->imageOut = new ImageOut();
     this->AddNode(this->imageOut);
@@ -23,6 +25,8 @@ NodeWorkspace::~NodeWorkspace()
     {
         delete node;
     }
+
+    delete onNodeCreated, onNodeDeleted;
 }
 
 bool NodeWorkspace::HasNode(Node* node)
@@ -57,6 +61,7 @@ void NodeWorkspace::AddNode(Node* node)
     {
         nodes.push_back(node);
         node->NodeConnectedToWorkspace(this);
+        onNodeCreated->Emit(this, node);
     }
 }
 
@@ -71,6 +76,8 @@ void NodeWorkspace::RemoveNode(Node* node)
             nodes.erase(nodes.begin() + index);
         }
         node->NodeDisconnectedFromWorkspace();
+
+        onNodeDeleted->Emit(this, node);
     }
 }
 
