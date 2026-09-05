@@ -5,10 +5,10 @@
 #include "node/Node.h"
 #include "node/NodeInput.h"
 
-class Grayscale : public Node
+class BoxBlur : public Node
 {
     public:
-        Grayscale() :
+        BoxBlur() :
             Node(InOutType::BUFFER)
         {
             nodeInputs[0] = new NodeInput(this, InOutType::BUFFER);
@@ -46,12 +46,33 @@ class Grayscale : public Node
                 Buffer4* newBuffer = new Buffer4(lastBuffer->width, lastBuffer->height);
 
                 for (int i = 0; i < lastBuffer->size; i++) {
-                    Color4 color = lastBuffer->PixelAt(i);
-                    int component = (color.r + color.g + color.b) / 3;
-                    color.r = component;
-                    color.g = component;
-                    color.b = component;
-                    newBuffer->pixels[i] = color;
+                    int x = i % lastBuffer->width;
+                    int y = i / lastBuffer->width;
+
+                    int sumR = 0;
+                    int sumG = 0;
+                    int sumB = 0;
+
+                    int count = 0;
+                    
+                    for (int newX = x - 1; newX <= x + 1; newX++)
+                    {
+                        for (int newY = y - 1; newY <= y + 1; newY++)
+                        {
+                            if (newX >= 0 && newX < lastBuffer->width && newY >= 0 && newY < lastBuffer->height)
+                            {
+                                Color4 pixel = lastBuffer->PixelAt(newX, newY);
+
+                                sumR += pixel.r;
+                                sumG += pixel.g;
+                                sumB += pixel.b;
+
+                                count++;
+                            }
+                        }
+                    }
+                    
+                    newBuffer->pixels[i] = Color4(sumR / count, sumG / count, sumB / count, lastBuffer->PixelAt(i).a);
                 }
 
                 cachedBuffer = newBuffer;
@@ -62,6 +83,6 @@ class Grayscale : public Node
 
         virtual std::string visualName() const override
         {
-            return "Grayscale";
+            return "Box Blur";
         }
 };

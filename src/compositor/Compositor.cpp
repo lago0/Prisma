@@ -20,13 +20,11 @@ Buffer4* Compositor::GetComposedViewportBuffer()
 
 void Compositor::SetDirty()
 {
-    std::cout << "compositor dirty\n";
     isDirty = true;
 }
 
 void Compositor::ComposeViewportBuffer()
 {
-    std::cout << "1\n";
     if (composedCachedBuffer != nullptr)
     {
         delete composedCachedBuffer;

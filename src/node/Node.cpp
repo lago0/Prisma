@@ -26,6 +26,11 @@ Node::~Node()
         }
         delete input;
     }
+
+    if (cachedBuffer)
+    {
+        delete cachedBuffer;
+    }
 }
 
 void Node::ConnectOutput(NodeInput* nodeInput)

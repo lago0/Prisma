@@ -7,6 +7,7 @@
 #include "node/NodeWorkspace.h"
 #include "node/nodes/ImageIn.h"
 #include "node/nodes/Grayscale.h"
+#include "node/nodes/BoxBlur.h"
 
 class NodeMap
 {
@@ -67,12 +68,28 @@ class GrayscaleNodeMap : public NodeMap
         }
 };
 
+class BoxBlurNodeMap : public NodeMap
+{
+    public:
+        BoxBlurNodeMap() :
+            NodeMap("Box Blur")
+        {
+        }
+        virtual Node* Create(NodeWorkspace* workspace)
+        {
+            Node* node = new BoxBlur();
+            workspace->AddNode(node);
+            return node;
+        }
+};
+
 std::vector<NodeMap*> mapNodes()
 {
     std::vector<NodeMap*> maps = {
         new MediaInNodeMap(),
         new MediaOutNodeMap(),
-        new GrayscaleNodeMap()
+        new GrayscaleNodeMap(),
+        new BoxBlurNodeMap()
     };
 
     return maps;

@@ -88,7 +88,6 @@ Node* NodeWorkspace::GetOutputNode()
 
 Buffer4* NodeWorkspace::GetViewportOutput()
 {
-    std::cout << "3\n";
     if (isDirty || cachedBuffer == nullptr)
     {
         cachedBuffer = static_cast<Buffer4*>(GetOutputNode()->GetViewportOutput());
@@ -99,7 +98,6 @@ Buffer4* NodeWorkspace::GetViewportOutput()
 
 void NodeWorkspace::SetDirty()
 {
-    std::cout << "node worksp dirty\n";
     isDirty = true;
     core->GetCompositor()->SetDirty();
 }
