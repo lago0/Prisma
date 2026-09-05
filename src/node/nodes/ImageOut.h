@@ -37,6 +37,7 @@ class ImageOut : public Node
 
         virtual void* GetViewportOutput() override
         {
+            std::cout << "4\n";
             if (!nodeInputs[0]->connected) return nullptr;
 
             if (isDirty)

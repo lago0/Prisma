@@ -9,6 +9,7 @@
 class Node;
 class NodeView;
 class Layer;
+class NodeMap;
 
 using NodeList = std::map<Node*, std::shared_ptr<NodeView>>;
 
@@ -35,6 +36,8 @@ namespace UI
             virtual void Update() override;
             virtual void Render() override;
 
+            void RenderCreateNodeMenu();
+
             void OnEvent(SDL_Event* event);
 
             void OnLayerCreatedCallback(Layer*);
@@ -48,6 +51,10 @@ namespace UI
 
             std::map<Layer*, NodeList> nodeViews;
 
+            std::vector<NodeMap*> nodeMaps;
+
+            bool showCreateMenu = false;
+
             float currentViewPosX = 0;
             float currentViewPosY = 0;
 
@@ -55,12 +62,16 @@ namespace UI
 
             bool dragging = false;
             bool draggingNode = false;
+            bool draggingConnection = false;
 
             float draggingPosOffsetX = 0.0;
             float draggingPosOffsetY = 0.0;
 
             float draggingStartPosX = 0.0;
             float draggingStartPosY = 0.0;
+
+            int draggingConnectionType = 0; // 0: Output, 1: Input
+            void* draggingConnectionEntity = nullptr;
 
             RenderInfo* renderInfo;
 

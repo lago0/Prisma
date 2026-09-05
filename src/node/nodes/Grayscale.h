@@ -1,14 +1,17 @@
 #pragma once
 
+#include <iostream>
+
 #include "node/Node.h"
 #include "node/NodeInput.h"
 
-class ImageIn : public Node
+class Grayscale : public Node
 {
     public:
-        ImageIn() :
+        Grayscale() :
             Node(InOutType::BUFFER)
         {
+            nodeInputs[0] = new NodeInput(this, InOutType::BUFFER);
         }
 
         virtual void* GetOutput() override
@@ -17,9 +20,9 @@ class ImageIn : public Node
 
             for (int i = 0; i < buffer->size; i++) {
                 buffer->pixels[i] = Color4(
-                    ((i % 1920) / 1920.0f) * 255,
-                    ((i % 1920) / 1920.0f) * 123,
-                    ((i % 1920) / 1920.0f) * 200,
+                    (i / 1920) * 255,
+                    (i / 1920) * 123,
+                    (i / 1920) * 200,
                     255
                 );
             }
@@ -29,6 +32,9 @@ class ImageIn : public Node
 
         virtual void* GetViewportOutput() override
         {
+            std::cout << "HELLO? \n";
+            if (!nodeInputs[0]->connected) return nullptr;
+
             if (isDirty)
             {
                 if (cachedBuffer != nullptr)
@@ -36,22 +42,20 @@ class ImageIn : public Node
                     delete cachedBuffer;
                 }
 
+                Buffer4* lastBuffer = static_cast<Buffer4*>(nodeInputs[0]->ConnectedNode()->GetOutput());
+                if (lastBuffer == nullptr) return nullptr;
                 Buffer4* newBuffer = new Buffer4(1920, 1080);
 
-                for (int i = 0; i < newBuffer->size; i++) {
-                    int x = i % newBuffer->width;
-                    int y = i / newBuffer->width;
-
-                    float fx = x / float(newBuffer->width - 1);
-                    float fy = y / float(newBuffer->height - 1);
-
-                    newBuffer->pixels[i] = Color4(
-                        fx * 255,
-                        fy * 255,
-                        128,
-                        255
-                    );
+                for (int i = 0; i < lastBuffer->size; i++) {
+                    Color4 color = lastBuffer->PixelAt(i);
+                    int component = (color.r + color.g + color.b) / 3;
+                    color.r = component;
+                    color.g = component;
+                    color.b = component;
+                    newBuffer->pixels[i] = color;
                 }
+
+                std::cout << "UPDATE \n";
 
                 cachedBuffer = newBuffer;
                 isDirty = false;
@@ -61,6 +65,6 @@ class ImageIn : public Node
 
         virtual std::string visualName() const override
         {
-            return "ImageIn";
+            return "Grayscale";
         }
 };

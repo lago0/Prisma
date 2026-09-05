@@ -40,5 +40,6 @@ std::string Layer::GetName() const
 
 Buffer4* Layer::GetViewportOutput()
 {
+    std::cout << "2\n";
     return nodeWorkspace->GetViewportOutput();
 }

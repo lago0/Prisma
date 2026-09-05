@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Compositor.h"
 #include "core/Core.h"
 #include "layer/LayerManager.h"
@@ -18,11 +20,13 @@ Buffer4* Compositor::GetComposedViewportBuffer()
 
 void Compositor::SetDirty()
 {
+    std::cout << "compositor dirty\n";
     isDirty = true;
 }
 
 void Compositor::ComposeViewportBuffer()
 {
+    std::cout << "1\n";
     if (composedCachedBuffer != nullptr)
     {
         delete composedCachedBuffer;
@@ -35,6 +39,7 @@ void Compositor::ComposeViewportBuffer()
     for (int i = layerNumber - 1; i >= 0; i--)
     {
         Buffer4* layerBuffer = core->layerManager->layers[i]->GetViewportOutput();
+
         if (layerBuffer != nullptr)
         {
             ComposeBuffer4OnBuffer4(buffer, layerBuffer);

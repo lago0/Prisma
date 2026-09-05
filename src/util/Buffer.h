@@ -68,7 +68,7 @@ class Buffer4
         Color4 PixelAt(int x, int y)
         {
             int position = x + y * width;
-            return PixelAt(position);
+            return PixelAt(position);   
         };
 
         std::vector<uint32_t> ToUint32Buffer()

@@ -43,6 +43,8 @@ void Node::ConnectOutput(NodeInput* nodeInput)
 
         this->onNodeUpdated.Emit(NodeUpdateType::OUTPUT_CONNECTED);
         node->onNodeUpdated.Emit(NodeUpdateType::INPUT_CONNECTED);
+
+        SetDirty();
     }
 }
 
@@ -59,6 +61,7 @@ void Node::DisconnectOutput(NodeInput* nodeInput)
     {
         if (nodeOutputs[i] == nodeInput)
         {
+            NodeInput* input = nodeOutputs[i];
             nodeOutputs.erase(nodeOutputs.begin() + i);
 
             nodeInput->connected = false;
@@ -66,6 +69,9 @@ void Node::DisconnectOutput(NodeInput* nodeInput)
 
             this->onNodeUpdated.Emit(NodeUpdateType::OUTPUT_DISCONNECTED);
             nodeInput->GetNode()->onNodeUpdated.Emit(NodeUpdateType::INPUT_DISCONNECTED);
+
+            input->GetNode()->SetDirty();
+            SetDirty();
         }
     }
 }
@@ -75,6 +81,7 @@ void Node::DisconnectInput(NodeInput* nodeInput)
     if (nodeInput->ConnectedNode() != nullptr)
     {
         nodeInput->ConnectedNode()->DisconnectOutput(nodeInput);
+        SetDirty();
     }
 }
 
@@ -90,8 +97,6 @@ void* Node::GetViewportOutput()
 
 void Node::SetDirty()
 {
-    if (isDirty) return;
-
     isDirty = true;
 
     for (NodeInput* nodeInput : nodeOutputs)

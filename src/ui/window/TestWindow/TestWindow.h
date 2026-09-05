@@ -64,7 +64,7 @@ namespace UI
                 ImGui::Begin("Viewport");
 
                 ImVec2 windowSize = ImGui::GetWindowSize();
-                ImVec2 size = ImVec2(windowSize.y * (texture->w / texture->h), windowSize.y); 
+                ImVec2 size = ImVec2(windowSize.y * ((float)texture->w / (float)texture->h), windowSize.y); 
 
                 ImGui::SetCursorPosX(windowSize.x / 2 - size.x / 2);
                 
