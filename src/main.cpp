@@ -23,7 +23,7 @@ int InitUI(Core* core)
         return 1;
     }
 
-    SDL_Window *window = SDL_CreateWindow("Image Editor", 1920/2, 1080/2, SDL_WINDOW_RESIZABLE);
+    SDL_Window *window = SDL_CreateWindow("Prisma", 1920/2, 1080/2, SDL_WINDOW_RESIZABLE);
     if (window == nullptr) 
     {
         SDL_Log("Could not create SDL window: %s\n", SDL_GetError());
@@ -103,6 +103,10 @@ int InitUI(Core* core)
 
     delete ui;
 
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
+    ImGui::DestroyPlatformWindows();
+
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
@@ -126,6 +130,10 @@ int main(int argc, char** argv)
 #else
     core_thread.join();
 #endif
+
+    if (core_thread.joinable()) {
+        core_thread.join();
+    }
 
     delete core;
 

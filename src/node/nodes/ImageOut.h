@@ -44,6 +44,7 @@ class ImageOut : public Node
                 if (cachedBuffer != nullptr)
                 {
                     delete cachedBuffer;
+                    cachedBuffer = nullptr;
                 }
 
                 Buffer4* oldBuffer = static_cast<Buffer4*>(nodeInputs[0]->ConnectedNode()->GetViewportOutput());

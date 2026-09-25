@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "enums/InOutType.h"
 #include "util/signal/Signal.h"
@@ -12,12 +13,13 @@
 
 class NodeInput;
 class Core;
+class NodeProperty;
 
 class Node
 {
     public:
         Node(InOutType type);
-        ~Node();
+        virtual ~Node();
 
         virtual void ConnectOutput(NodeInput* nodeInput);
         virtual void ConnectInput(NodeInput* nodeInput, Node* node);
@@ -33,6 +35,11 @@ class Node
         virtual void NodeConnectedToWorkspace(NodeWorkspace* nodeWorkspace);
         virtual void NodeDisconnectedFromWorkspace();
 
+        virtual std::string visualName() const
+        {
+            return "Node";
+        }
+
         Buffer4* cachedBuffer = nullptr;
         bool isDirty = true;
 
@@ -41,12 +48,9 @@ class Node
         bool outputEnabled = true;
 
         InOutType outType;
-        Util::Signal<NodeUpdateType> onNodeUpdated;
+        Util::Signal<NodeUpdateType>* onNodeUpdated;
+
+        std::vector<std::shared_ptr<NodeProperty>> properties;
 
         NodeWorkspace* nodeWorkspace;
-
-        virtual std::string visualName() const
-        {
-            return "Node";
-        }
 };

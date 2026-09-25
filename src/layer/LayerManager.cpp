@@ -18,7 +18,9 @@ LayerManager::~LayerManager()
         delete layer;
     }
 
-    delete onLayerCreated, onLayerUpdated, onLayerDeleted;
+    delete onLayerCreated;
+    delete onLayerUpdated;
+    delete onLayerDeleted;
 }
 
 Layer* LayerManager::GetLayerByIndex(int index)

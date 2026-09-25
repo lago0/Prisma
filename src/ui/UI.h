@@ -11,6 +11,7 @@
 namespace UI 
 {
     class Window;
+    class NodeView;
 
     class UI
     {
@@ -42,10 +43,12 @@ namespace UI
             SDL_Window* main_window;
             SDL_Renderer* renderer;
 
-            Layer* selectedLayer;
+            Layer* selectedLayer = nullptr;
 
             Util::Signal<Layer*>* onLayerSelectedChange;
             Util::Signal<SDL_Event*>* onEvent;
+
+            std::shared_ptr<NodeView> selectedNodeView = nullptr;
 
         private:
             Core* core;

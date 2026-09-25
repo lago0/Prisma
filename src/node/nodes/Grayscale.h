@@ -39,6 +39,7 @@ class Grayscale : public Node
                 if (cachedBuffer != nullptr)
                 {
                     delete cachedBuffer;
+                    cachedBuffer = nullptr;
                 }
 
                 Buffer4* lastBuffer = static_cast<Buffer4*>(nodeInputs[0]->ConnectedNode()->GetViewportOutput());

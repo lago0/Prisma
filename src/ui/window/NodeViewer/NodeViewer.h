@@ -3,29 +3,26 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <SDL3/SDL.h>
 
 #include "ui/Window.h"
 
 class Node;
-class NodeView;
 class Layer;
 class NodeMap;
-
-using NodeList = std::map<Node*, std::shared_ptr<NodeView>>;
 
 namespace UI
 {
     class UI;
-
+    class NodeView;
     class NodeViewer;
+    typedef struct RenderInfo RenderInfo;
 
-    typedef struct
-    {
-        ImVec2 winPos;
-        ImVec2 winSize;
-        ImDrawList* drawList;
-        NodeViewer* window;
-    } RenderInfo;
+    class NodeViewerRenderer;
+    class NodeViewerControls;
+    class NodeViewerGraph;
+
+    using NodeList = std::map<Node*, std::shared_ptr<NodeView>>;
 
     class NodeViewer : public Window
     {
@@ -36,22 +33,12 @@ namespace UI
             virtual void Update() override;
             virtual void Render() override;
 
-            void RenderCreateNodeMenu();
-
             void OnEvent(SDL_Event* event);
-
-            void OnLayerCreatedCallback(Layer*);
-            void OnNodeCreatedCallback(Layer*, Node*);
-
-            void OnLayerDeletedCallback(Layer* oldLayerPointer);
-            void OnNodeDeletedCallback(Layer* layer, Node* oldNodePointer);
 
             void SetSelectedNodeView(std::shared_ptr<NodeView> view);
             std::shared_ptr<NodeView> GetSelectedNodeView();
 
-            std::map<Layer*, NodeList> nodeViews;
-
-            std::vector<NodeMap*> nodeMaps;
+            std::vector<std::shared_ptr<NodeMap>> nodeMaps;
 
             bool showCreateMenu = false;
 
@@ -73,10 +60,8 @@ namespace UI
             int draggingConnectionType = 0; // 0: Output, 1: Input
             void* draggingConnectionEntity = nullptr;
 
-            RenderInfo* renderInfo;
-
-            std::shared_ptr<NodeView> selectedNodeView = nullptr;
-
-            bool isWindowFocused = false;
+            std::unique_ptr<NodeViewerRenderer> renderer;
+            std::unique_ptr<NodeViewerControls> controls;
+            std::unique_ptr<NodeViewerGraph> graph;
     };
 }

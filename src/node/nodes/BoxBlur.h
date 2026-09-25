@@ -1,9 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <stdlib.h>
 
 #include "node/Node.h"
 #include "node/NodeInput.h"
+#include "node/NodeInput.h"
+#include "node/NodeProperty.h"
 
 class BoxBlur : public Node
 {
@@ -12,6 +15,10 @@ class BoxBlur : public Node
             Node(InOutType::BUFFER)
         {
             nodeInputs[0] = new NodeInput(this, InOutType::BUFFER);
+
+            properties.resize(2);
+
+            properties[0] = CreateIntNodeProperty(this, "Weight", 1, 0, 100);
         }
 
         virtual void* GetOutput() override
@@ -36,48 +43,60 @@ class BoxBlur : public Node
 
             if (isDirty)
             {
-                if (cachedBuffer != nullptr)
-                {
+                if (cachedBuffer != nullptr) {
                     delete cachedBuffer;
+                    cachedBuffer = nullptr;
                 }
 
                 Buffer4* lastBuffer = static_cast<Buffer4*>(nodeInputs[0]->ConnectedNode()->GetViewportOutput());
                 if (lastBuffer == nullptr) return nullptr;
-                Buffer4* newBuffer = new Buffer4(lastBuffer->width, lastBuffer->height);
+                
+                int width = lastBuffer->width;
+                int height = lastBuffer->height;
+                int size = lastBuffer->size;
+                
+                int weight = *(int*)properties[0]->GetValue();
 
-                for (int i = 0; i < lastBuffer->size; i++) {
-                    int x = i % lastBuffer->width;
-                    int y = i / lastBuffer->width;
+                Buffer4* tempBuffer = new Buffer4(width, height);
+                Buffer4* newBuffer = new Buffer4(width, height);
 
-                    int sumR = 0;
-                    int sumG = 0;
-                    int sumB = 0;
+                for (int y = 0; y < height; y++) {
+                    int rowOffset = y * width;
+                    for (int x = 0; x < width; x++) {
+                        int sumR = 0, sumG = 0, sumB = 0, count = 0;
+                        int startX = std::max(0, x - weight);
+                        int endX = std::min(width - 1, x + weight);
 
-                    int count = 0;
-                    
-                    for (int newX = x - 1; newX <= x + 1; newX++)
-                    {
-                        for (int newY = y - 1; newY <= y + 1; newY++)
-                        {
-                            if (newX >= 0 && newX < lastBuffer->width && newY >= 0 && newY < lastBuffer->height)
-                            {
-                                Color4 pixel = lastBuffer->PixelAt(newX, newY);
-
-                                sumR += pixel.r;
-                                sumG += pixel.g;
-                                sumB += pixel.b;
-
-                                count++;
-                            }
+                        for (int newX = startX; newX <= endX; newX++) {
+                            Color4 pixel = lastBuffer->pixels[rowOffset + newX];
+                            sumR += pixel.r; sumG += pixel.g; sumB += pixel.b;
+                            count++;
                         }
+                        tempBuffer->pixels[rowOffset + x] = Color4(sumR / count, sumG / count, sumB / count, lastBuffer->pixels[rowOffset + x].a);
                     }
-                    
-                    newBuffer->pixels[i] = Color4(sumR / count, sumG / count, sumB / count, lastBuffer->PixelAt(i).a);
                 }
 
+                for (int y = 0; y < height; y++) {
+                    int rowOffset = y * width;
+                    for (int x = 0; x < width; x++) {
+                        int sumR = 0, sumG = 0, sumB = 0, count = 0;
+                        int startY = std::max(0, y - weight);
+                        int endY = std::min(height - 1, y + weight);
+
+                        for (int newY = startY; newY <= endY; newY++) {
+                            Color4 pixel = tempBuffer->pixels[newY * width + x];
+                            sumR += pixel.r; sumG += pixel.g; sumB += pixel.b;
+                            count++;
+                        }
+                        newBuffer->pixels[rowOffset + x] = Color4(sumR / count, sumG / count, sumB / count, tempBuffer->pixels[rowOffset + x].a);
+                    }
+                }
+
+                delete tempBuffer;
                 cachedBuffer = newBuffer;
                 isDirty = false;
             }
+
             return static_cast<void*>(cachedBuffer);
         };
 

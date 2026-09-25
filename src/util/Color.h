@@ -2,6 +2,11 @@
 
 #include <stdint.h>
 
+/**
+ * @class Color3
+ * @brief Class for color handling (RGB).
+ * @author lago0
+ */
 class Color3
 {
     public:
@@ -24,6 +29,11 @@ class Color3
         }
 };
 
+/**
+ * @class Color4
+ * @brief Class for color handling (RGBA).
+ * @author lago0
+ */
 class Color4
 {
     public:
@@ -49,6 +59,12 @@ class Color4
         }
 };
 
+/**
+ * @brief Mixes two color using Alpha Blend algorithm.
+ * @param one The Color4 used as base
+ * @param two The Color4 used as front
+ * @author lago0
+ */
 inline Color4 AlphaBlendPixel(Color4 one, Color4 two)
 {
     float oneR = one.r / 255.0f;

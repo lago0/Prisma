@@ -8,6 +8,7 @@
 #include "node/nodes/ImageIn.h"
 #include "node/nodes/Grayscale.h"
 #include "node/nodes/BoxBlur.h"
+#include "node/nodes/ChromaKey.h"
 
 class NodeMap
 {
@@ -33,21 +34,6 @@ class MediaInNodeMap : public NodeMap
         virtual Node* Create(NodeWorkspace* workspace)
         {
             Node* node = new ImageIn();
-            workspace->AddNode(node);
-            return node;
-        }
-};
-
-class MediaOutNodeMap : public NodeMap
-{
-    public:
-        MediaOutNodeMap() :
-            NodeMap("Media Out")
-        {
-        }
-        virtual Node* Create(NodeWorkspace* workspace)
-        {
-            Node* node = new ImageOut();
             workspace->AddNode(node);
             return node;
         }
@@ -83,13 +69,28 @@ class BoxBlurNodeMap : public NodeMap
         }
 };
 
-std::vector<NodeMap*> mapNodes()
+class ChromaKeyNodeMap : public NodeMap
 {
-    std::vector<NodeMap*> maps = {
-        new MediaInNodeMap(),
-        new MediaOutNodeMap(),
-        new GrayscaleNodeMap(),
-        new BoxBlurNodeMap()
+    public:
+        ChromaKeyNodeMap() :
+            NodeMap("Chroma Key")
+        {
+        }
+        virtual Node* Create(NodeWorkspace* workspace)
+        {
+            Node* node = new ChromaKey();
+            workspace->AddNode(node);
+            return node;
+        }
+};
+
+inline std::vector<std::shared_ptr<NodeMap>> mapNodes()
+{
+    std::vector<std::shared_ptr<NodeMap>> maps = {
+        std::make_shared<MediaInNodeMap>(),
+        std::make_shared<GrayscaleNodeMap>(),
+        std::make_shared<BoxBlurNodeMap>(),
+        std::make_shared<ChromaKeyNodeMap>()
     };
 
     return maps;

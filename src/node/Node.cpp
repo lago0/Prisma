@@ -1,10 +1,12 @@
 #include "Node.h"
 #include "NodeInput.h"
 #include "core/Core.h"
+#include "NodeProperty.h"
 
 Node::Node(InOutType type) : 
     outType(type),
-    isDirty(true)
+    isDirty(true),
+    onNodeUpdated(new Util::Signal<NodeUpdateType>())
 {
 }
 
@@ -31,6 +33,8 @@ Node::~Node()
     {
         delete cachedBuffer;
     }
+
+    delete onNodeUpdated;
 }
 
 void Node::ConnectOutput(NodeInput* nodeInput)
@@ -46,8 +50,8 @@ void Node::ConnectOutput(NodeInput* nodeInput)
         nodeInput->connected = true;
         nodeInput->connectedNode = this;
 
-        this->onNodeUpdated.Emit(NodeUpdateType::OUTPUT_CONNECTED);
-        node->onNodeUpdated.Emit(NodeUpdateType::INPUT_CONNECTED);
+        this->onNodeUpdated->Emit(NodeUpdateType::OUTPUT_CONNECTED);
+        node->onNodeUpdated->Emit(NodeUpdateType::INPUT_CONNECTED);
 
         SetDirty();
     }
@@ -72,8 +76,8 @@ void Node::DisconnectOutput(NodeInput* nodeInput)
             nodeInput->connected = false;
             nodeInput->connectedNode = nullptr;
 
-            this->onNodeUpdated.Emit(NodeUpdateType::OUTPUT_DISCONNECTED);
-            nodeInput->GetNode()->onNodeUpdated.Emit(NodeUpdateType::INPUT_DISCONNECTED);
+            this->onNodeUpdated->Emit(NodeUpdateType::OUTPUT_DISCONNECTED);
+            nodeInput->GetNode()->onNodeUpdated->Emit(NodeUpdateType::INPUT_DISCONNECTED);
 
             input->GetNode()->SetDirty();
             SetDirty();

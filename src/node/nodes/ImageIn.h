@@ -39,7 +39,7 @@ class ImageIn : public Node
                 Buffer4* newBuffer = new Buffer4(1920, 1080);
 
                 for (int i = 0; i < newBuffer->size; i++) {
-                    int x = i % newBuffer->width;
+                    /*int x = i % newBuffer->width;
                     int y = i / newBuffer->width;
 
                     float fx = x / float(newBuffer->width - 1);
@@ -49,6 +49,15 @@ class ImageIn : public Node
                         fx * 255,
                         fy * 255,
                         128,
+                        255
+                    );*/
+                    int x = i % newBuffer->width;
+                    int y = i / newBuffer->width;
+
+                    newBuffer->pixels[i] = Color4(
+                        x > 1000 ? 0 : 255,
+                        255,
+                        x > 1000 ? 0 : 255,
                         255
                     );
                 }

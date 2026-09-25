@@ -5,6 +5,8 @@
 #include "window/LayerWindow/LayerWindow.h"
 #include "window/TestWindow/TestWindow.h"
 #include "window/NodeViewer/NodeViewer.h"
+#include "window/Inspector/Inspector.h"
+#include "ui/window/NodeViewer/NodeView.h"
 
 #include "util/Time.h"
 
@@ -26,6 +28,10 @@ UI::UI::UI(SDL_Window* main_window, SDL_Renderer* renderer, Core* core) :
     OpenWindow(window);
 
     window = std::make_shared<NodeViewer>(this);
+
+    OpenWindow(window);
+
+    window = std::make_shared<Inspector>(this);
 
     OpenWindow(window);
 }

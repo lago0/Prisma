@@ -9,6 +9,14 @@ Compositor::Compositor(Core* core) :
 {
 }
 
+Compositor::~Compositor()
+{
+    if (composedCachedBuffer)
+    {
+        delete composedCachedBuffer;
+    }
+}
+
 Buffer4* Compositor::GetComposedViewportBuffer()
 {
     if (isDirty || composedCachedBuffer == nullptr)
