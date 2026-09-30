@@ -32,12 +32,6 @@ void Core::Start()
 {
 }
 
-Buffer4* Core::GetOutput()
-{
-    //return static_cast<Buffer4*>(nodeWorkspace->GetOutput());
-    return nullptr;
-}
-
 Compositor* Core::GetCompositor()
 {
     return compositor;
