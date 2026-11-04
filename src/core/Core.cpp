@@ -12,12 +12,14 @@
 #include "node/enums/InOutType.h"
 #include "layer/LayerManager.h"
 #include "compositor/Compositor.h"
+#include "imagegallery/ImageGallery.h"
 
 static NodeWorkspace* nodeWorkspace;
 
 Core::Core() :
     layerManager(new LayerManager(this)),
-    compositor(new Compositor(this))
+    compositor(new Compositor(this)),
+    imageGallery(new ImageGallery(this))
 {
     std::cout << "Initialized\n";
 }
@@ -26,6 +28,7 @@ Core::~Core()
 {
     delete layerManager;
     delete compositor;
+    delete imageGallery;
 }
 
 void Core::Start()

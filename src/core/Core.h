@@ -3,6 +3,7 @@
 class Buffer4;
 class LayerManager;
 class Compositor;
+class ImageGallery;
 
 /**
  * @class Core
@@ -29,4 +30,5 @@ class Core
         
         LayerManager* layerManager;
         Compositor* compositor;
+        ImageGallery* imageGallery;
 };

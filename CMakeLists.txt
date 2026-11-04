@@ -58,9 +58,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu/cmake/opencv4") 
+
 project(Prisma)
 
 find_package(SDL3 REQUIRED)
+find_package(OpenCV 4 REQUIRED)
 
 file(GLOB_RECURSE PRISMA_SOURCES 
     "src/*.cpp"
@@ -78,6 +81,8 @@ set(IMGUI_SOURCES
     lib/imgui_impl_sdlrenderer3.cpp
 )
 
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 add_executable(Prisma ${PRISMA_SOURCES} ${IMGUI_SOURCES})
 
 target_include_directories(Prisma PRIVATE
@@ -86,4 +91,4 @@ target_include_directories(Prisma PRIVATE
     ${CMAKE_SOURCE_DIR}/lib
 )
 
-target_link_libraries(Prisma PRIVATE SDL3::SDL3)
+target_link_libraries(Prisma PRIVATE SDL3::SDL3 ${OpenCV_LIBS})

@@ -18,6 +18,7 @@ A Prisma project is built upon **layers** that contain **nodes**. The nodes gene
 * **Make**
 * **SDL3** installed on your computer
 * **Dear ImGui** (The source code already includes the header files so no need to install it independently)
+* **OpenCV 4.10.0**
 
 # A screenshot of Prisma
 ---

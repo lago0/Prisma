@@ -3,6 +3,7 @@
 #include <vector>
 #include <stdint.h>
 #include <iostream>
+#include <opencv2/opencv.hpp>
 
 #include "Color.h"
 

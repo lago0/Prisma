@@ -44,7 +44,8 @@ void UI::Inspector::Render()
 
                     int min = bounds->min;
                     int max = bounds->max;
-                    ImGui::SliderInt(property->GetName().c_str(), &temp, 0, 200);
+                    ImGui::Text(property->GetName().c_str());
+                    ImGui::SliderInt(("##" + property->GetName()).c_str(), &temp, min, max);
 
                     if (temp != *(int*)property->GetValue())
                     {

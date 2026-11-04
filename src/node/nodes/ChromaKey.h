@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <opencv2/opencv.hpp>
 
 #include "node/Node.h"
 #include "node/NodeInput.h"
@@ -58,7 +59,7 @@ class ChromaKey : public Node
 
                 Buffer4* newBuffer = new Buffer4(width, height);
 
-                for (int i = 0; i < size; i++) {
+                /*for (int i = 0; i < size; i++) {
                     Color4 color = lastBuffer->PixelAt(i);
 
                     bool lteIntensity = (color.g > 75);
@@ -71,7 +72,40 @@ class ChromaKey : public Node
                     }
 
                     newBuffer->pixels[i] = color;
-                }
+                }*/
+               
+                cv::Mat lastBufferMat(lastBuffer->height, lastBuffer->width, CV_8UC4, lastBuffer->pixels.data());
+
+                cv::UMat lastBufferUMat;
+                lastBufferMat.copyTo(lastBufferUMat); 
+
+                cv::UMat bgrForHsv;
+                cv::cvtColor(lastBufferUMat, bgrForHsv, cv::COLOR_RGBA2BGR);
+
+                cv::UMat hsv;
+                cv::cvtColor(bgrForHsv, hsv, cv::COLOR_BGR2HSV);
+
+                cv::UMat mask;
+                cv::inRange(hsv, cv::Scalar(35, 40, 40), cv::Scalar(85, 255, 255), mask);
+
+                cv::UMat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3)).getUMat(cv::ACCESS_READ);
+                cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+                cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+
+                cv::UMat mask_inv;
+                cv::bitwise_not(mask, mask_inv);
+
+                std::vector<cv::UMat> rgba_channels;
+                cv::split(lastBufferUMat, rgba_channels);
+
+                rgba_channels[3] = mask_inv; 
+
+                cv::UMat rgba_gpu;
+                cv::merge(rgba_channels, rgba_gpu);
+
+                cv::Mat newBufferMat(newBuffer->height, newBuffer->width, CV_8UC4, newBuffer->pixels.data());
+
+                rgba_gpu.copyTo(newBufferMat);
 
                 cachedBuffer = newBuffer;
                 isDirty = false;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <opencv2/opencv.hpp>
 
 #include "node/Node.h"
 #include "node/NodeInput.h"
@@ -46,14 +47,29 @@ class Grayscale : public Node
                 if (lastBuffer == nullptr) return nullptr;
                 Buffer4* newBuffer = new Buffer4(lastBuffer->width, lastBuffer->height);
 
-                for (int i = 0; i < lastBuffer->size; i++) {
+                /*for (int i = 0; i < lastBuffer->size; i++) {
                     Color4 color = lastBuffer->PixelAt(i);
                     int component = (color.r + color.g + color.b) / 3;
                     color.r = component;
                     color.g = component;
                     color.b = component;
                     newBuffer->pixels[i] = color;
-                }
+                }*/
+
+                cv::Mat lastBufferMat(lastBuffer->height, lastBuffer->width, CV_8UC4, lastBuffer->pixels.data());
+                cv::UMat lastBufferUMat;
+
+                lastBufferMat.copyTo(lastBufferUMat);
+
+                cv::UMat tempBuffer;
+                cv::UMat newBufferUMat;
+
+                cv::cvtColor(lastBufferUMat, tempBuffer, cv::COLOR_RGBA2GRAY);
+                cv::cvtColor(tempBuffer, newBufferUMat, cv::COLOR_GRAY2RGBA);
+
+                cv::Mat newBufferMat(newBuffer->height, newBuffer->width, CV_8UC4, newBuffer->pixels.data());
+
+                newBufferUMat.copyTo(newBufferMat);
 
                 cachedBuffer = newBuffer;
                 isDirty = false;

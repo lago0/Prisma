@@ -8,6 +8,7 @@
 #include "node/nodes/ImageIn.h"
 #include "node/nodes/Grayscale.h"
 #include "node/nodes/BoxBlur.h"
+#include "node/nodes/GaussianBlur.h"
 #include "node/nodes/ChromaKey.h"
 
 class NodeMap
@@ -69,6 +70,21 @@ class BoxBlurNodeMap : public NodeMap
         }
 };
 
+class GaussianBlurNodeMap : public NodeMap
+{
+    public:
+        GaussianBlurNodeMap() :
+            NodeMap("Gaussian Blur")
+        {
+        }
+        virtual Node* Create(NodeWorkspace* workspace)
+        {
+            Node* node = new GaussianBlur();
+            workspace->AddNode(node);
+            return node;
+        }
+};
+
 class ChromaKeyNodeMap : public NodeMap
 {
     public:
@@ -90,6 +106,7 @@ inline std::vector<std::shared_ptr<NodeMap>> mapNodes()
         std::make_shared<MediaInNodeMap>(),
         std::make_shared<GrayscaleNodeMap>(),
         std::make_shared<BoxBlurNodeMap>(),
+        std::make_shared<GaussianBlurNodeMap>(),
         std::make_shared<ChromaKeyNodeMap>()
     };
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <opencv2/opencv.hpp>
 
 #include "node/Node.h"
 #include "node/NodeInput.h"
@@ -18,7 +19,8 @@ class BoxBlur : public Node
 
             properties.resize(2);
 
-            properties[0] = CreateIntNodeProperty(this, "Weight", 1, 0, 100);
+            properties[0] = CreateIntNodeProperty(this, "Weight X", 10, 1, 100);
+            properties[1] = CreateIntNodeProperty(this, "Weight Y", 10, 1, 100);
         }
 
         virtual void* GetOutput() override
@@ -55,44 +57,22 @@ class BoxBlur : public Node
                 int height = lastBuffer->height;
                 int size = lastBuffer->size;
                 
-                int weight = *(int*)properties[0]->GetValue();
+                int weightX = *(int*)properties[0]->GetValue();
+                int weightY = *(int*)properties[1]->GetValue();
 
-                Buffer4* tempBuffer = new Buffer4(width, height);
                 Buffer4* newBuffer = new Buffer4(width, height);
 
-                for (int y = 0; y < height; y++) {
-                    int rowOffset = y * width;
-                    for (int x = 0; x < width; x++) {
-                        int sumR = 0, sumG = 0, sumB = 0, count = 0;
-                        int startX = std::max(0, x - weight);
-                        int endX = std::min(width - 1, x + weight);
+                cv::Mat originBuffer(lastBuffer->height, lastBuffer->width, CV_8UC4, lastBuffer->pixels.data());
 
-                        for (int newX = startX; newX <= endX; newX++) {
-                            Color4 pixel = lastBuffer->pixels[rowOffset + newX];
-                            sumR += pixel.r; sumG += pixel.g; sumB += pixel.b;
-                            count++;
-                        }
-                        tempBuffer->pixels[rowOffset + x] = Color4(sumR / count, sumG / count, sumB / count, lastBuffer->pixels[rowOffset + x].a);
-                    }
-                }
+                cv::UMat originBufferU = originBuffer.getUMat(cv::ACCESS_READ);
+                cv::UMat blurredBufferU;
 
-                for (int y = 0; y < height; y++) {
-                    int rowOffset = y * width;
-                    for (int x = 0; x < width; x++) {
-                        int sumR = 0, sumG = 0, sumB = 0, count = 0;
-                        int startY = std::max(0, y - weight);
-                        int endY = std::min(height - 1, y + weight);
+                cv::blur(originBufferU, blurredBufferU, cv::Size(weightX, weightY));
 
-                        for (int newY = startY; newY <= endY; newY++) {
-                            Color4 pixel = tempBuffer->pixels[newY * width + x];
-                            sumR += pixel.r; sumG += pixel.g; sumB += pixel.b;
-                            count++;
-                        }
-                        newBuffer->pixels[rowOffset + x] = Color4(sumR / count, sumG / count, sumB / count, tempBuffer->pixels[rowOffset + x].a);
-                    }
-                }
+                cv::Mat blurredBuffer(lastBuffer->height, lastBuffer->width, CV_8UC4, newBuffer->pixels.data());
 
-                delete tempBuffer;
+                blurredBufferU.copyTo(blurredBuffer);
+
                 cachedBuffer = newBuffer;
                 isDirty = false;
             }
