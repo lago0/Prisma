@@ -26,7 +26,8 @@ NodeWorkspace::~NodeWorkspace()
         delete node;
     }
 
-    delete onNodeCreated, onNodeDeleted;
+    delete onNodeCreated;
+    delete onNodeDeleted;
 }
 
 bool NodeWorkspace::HasNode(Node* node)

@@ -2,6 +2,10 @@
 
 #include "node/Node.h"
 #include "node/NodeInput.h"
+#include "node/NodeProperty.h"
+#include "imagegallery/Image.h"
+
+#include <iostream>
 
 class ImageIn : public Node
 {
@@ -9,6 +13,8 @@ class ImageIn : public Node
         ImageIn() :
             Node(InOutType::BUFFER)
         {
+            properties.resize(1);
+            properties[0] = CreateImageNodeProperty(this, "Image Source");
         }
 
         virtual void* GetOutput() override
@@ -34,9 +40,19 @@ class ImageIn : public Node
                 if (cachedBuffer != nullptr)
                 {
                     delete cachedBuffer;
+                    cachedBuffer = nullptr;
                 }
 
-                Buffer4* newBuffer = new Buffer4(1920, 1080);
+                auto imageProperty = std::dynamic_pointer_cast<ImageNodeProperty>(properties[0]);
+
+                if (!imageProperty->GetValue())
+                {
+                    return nullptr;
+                }
+
+                std::shared_ptr<Image> imageSelected = imageProperty->GetValue();
+
+                /*Buffer4* newBuffer = new Buffer4(1920, 1080);
 
                 for (int i = 0; i < newBuffer->size; i++) {
                     /*int x = i % newBuffer->width;
@@ -50,7 +66,7 @@ class ImageIn : public Node
                         fy * 255,
                         128,
                         255
-                    );*/
+                    );
                     int x = i % newBuffer->width;
                     int y = i / newBuffer->width;
 
@@ -60,8 +76,12 @@ class ImageIn : public Node
                         x > 1000 ? 0 : 255,
                         255
                     );
-                }
+                }*/
 
+                Buffer4* lastBuffer = imageSelected->GetBuffer();
+
+                Buffer4* newBuffer = new Buffer4(lastBuffer);
+                
                 cachedBuffer = newBuffer;
                 isDirty = false;
             }

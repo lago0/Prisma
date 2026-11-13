@@ -23,6 +23,7 @@ void Image::ReloadBuffer()
     if (currentBuffer)
     {
         delete currentBuffer;
+        currentBuffer = nullptr;
     }
 
     cv::Mat img = cv::imread(this->path);
@@ -37,7 +38,7 @@ void Image::ReloadBuffer()
     Buffer4* imageBuffer = new Buffer4(imgSize.width, imgSize.height);
     cv::Mat imgMat(imgSize.height, imgSize.width, CV_8UC4, imageBuffer->pixels.data());
 
-    img.copyTo(imgMat);
+    cv:cvtColor(img, imgMat, cv::COLOR_BGR2RGBA);
     
     currentBuffer = imageBuffer;
 }

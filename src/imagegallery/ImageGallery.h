@@ -50,6 +50,9 @@ class ImageGallery
          */
         std::shared_ptr<Image> GetImage(int id);
 
+        std::map<int, std::shared_ptr<Image>>& GetImages();
+
+    private:
         std::map<int, std::shared_ptr<Image>> images;
 
         int lastId = 0;

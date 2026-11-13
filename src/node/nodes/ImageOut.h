@@ -1,5 +1,7 @@
 #pragma once
 
+#include <opencv2/opencv.hpp>
+
 #include "core/Core.h"
 #include "node/Node.h"
 #include "node/NodeInput.h"
@@ -51,15 +53,10 @@ class ImageOut : public Node
                 if (oldBuffer == nullptr) return nullptr;
                 Buffer4* newBuffer = new Buffer4(oldBuffer->width, oldBuffer->height);
 
-                for (int i = 0; i < oldBuffer->size; i++) {
-                    Color4 pixel = oldBuffer->PixelAt(i);
-                    newBuffer->pixels[i] = Color4(
-                        pixel.r,// * 1.2, 
-                        pixel.g,// * 1.2, 
-                        pixel.b,// * 1.2, 
-                        pixel.a
-                    );
-                }
+                cv::Mat oldMat(oldBuffer->height, oldBuffer->width, CV_8UC4, oldBuffer->pixels.data());
+                cv::Mat newMat(newBuffer->height, newBuffer->width, CV_8UC4, newBuffer->pixels.data());
+
+                oldMat.copyTo(newMat);
 
                 cachedBuffer = newBuffer;
                 isDirty = false;

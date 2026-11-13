@@ -55,7 +55,7 @@ class ChromaKey : public Node
                 int width = lastBuffer->width;
                 int height = lastBuffer->height;
                 int size = lastBuffer->size;
-                int weight = *(int*)properties[0]->GetValue();
+                int weight = std::dynamic_pointer_cast<IntNodeProperty>(properties[0])->GetValue();
 
                 Buffer4* newBuffer = new Buffer4(width, height);
 

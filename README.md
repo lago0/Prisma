@@ -22,4 +22,4 @@ A Prisma project is built upon **layers** that contain **nodes**. The nodes gene
 
 # A screenshot of Prisma
 ---
-![Prisma's image](assets/example-img.png)
+![Prisma's image](mdassets/example-img.png)

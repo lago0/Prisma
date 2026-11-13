@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <SDL3/SDL.h>
 #include <imgui.h>
+#include <iostream>
 
 #include "ui/Window.h"
 #include "util/Buffer.h"

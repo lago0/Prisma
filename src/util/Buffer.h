@@ -93,6 +93,13 @@ class Buffer4
             pixels.resize(size);
         };
 
+        Buffer4(const Buffer4* other) :
+            width(other->width),
+            height(other->height),
+            pixels(other->pixels)
+        {
+        };
+
         /**
          * @brief Gets a pixel on the screen
          * @param position Number of pixel

@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include <memory>
+#include <imgui.h>
 
 #include "core/Core.h"
 #include "layer/Layer.h"
@@ -12,6 +13,7 @@ namespace UI
 {
     class Window;
     class NodeView;
+    class SelectImageDialog;
 
     class UI
     {
@@ -49,6 +51,11 @@ namespace UI
             Util::Signal<SDL_Event*>* onEvent;
 
             std::shared_ptr<NodeView> selectedNodeView = nullptr;
+
+            SelectImageDialog* selectImageDialog = nullptr;
+
+            ImFont* boldFont;
+            ImFont* titleFont;
 
         private:
             Core* core;

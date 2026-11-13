@@ -57,8 +57,8 @@ class BoxBlur : public Node
                 int height = lastBuffer->height;
                 int size = lastBuffer->size;
                 
-                int weightX = *(int*)properties[0]->GetValue();
-                int weightY = *(int*)properties[1]->GetValue();
+                int weightX = std::dynamic_pointer_cast<IntNodeProperty>(properties[0])->GetValue();
+                int weightY = std::dynamic_pointer_cast<IntNodeProperty>(properties[1])->GetValue();
 
                 Buffer4* newBuffer = new Buffer4(width, height);
 

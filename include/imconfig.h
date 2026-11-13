@@ -148,3 +148,29 @@ namespace ImGui
     void MyFunction(const char* name, MyMatrix44* mtx);
 }
 */
+
+// --- SOLUCIÓN DE COMPATIBILIDAD PARA FREETYPE ---
+#pragma once
+#include <stdint.h>
+
+// 1. Definir la macro que le falta a tu ImGui antiguo
+#ifndef ImRoundSigned64
+#define ImRoundSigned64(v) ((int64_t)((v) >= 0.0f ? (v) + 0.5f : (v) - 0.5f))
+#endif
+
+// 2. Parchear la estructura ImFontLoader para que tenga los miembros modernos que pide FreeType
+#pragma once
+#include <stdint.h>
+
+// 1. Mantener el redondeo que le falta
+#ifndef ImRoundSigned64
+#define ImRoundSigned64(v) ((int64_t)((v) >= 0.0f ? (v) + 0.5f : (v) - 0.5f))
+#endif
+
+// 2. Redirección quirúrgica de los miembros que le faltan a tu estructura nativa
+// Redirigimos las firmas que fallan hacia las firmas tradicionales de tu ImGui
+#define FontSrcGetGlyphIndexFromCodepoint FontSrcGetGlyphIndex
+#define FontSrcContainsGlyph              FontSrcContains
+#define FontBakedLoadGlyph                FontBakedLoad
+// -----------------------------------------
+

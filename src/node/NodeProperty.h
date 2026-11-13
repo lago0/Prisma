@@ -5,12 +5,14 @@
 #include <memory>
 
 #include "node/Node.h"
+#include "imagegallery/ImageGallery.h"
 
 enum class PropertyType
 {
     INT,
     FLOAT,
-    TEXT
+    TEXT,
+    IMAGE
 };
 
 /**
@@ -23,6 +25,11 @@ class NodePropertyParams
         virtual ~NodePropertyParams() = default;
 };
 
+/**
+ * @class IntBoundsParam
+ * @brief Used for designing bounds on properties. It is deprecated and should not be used as it is going to be deleted soon.
+ * @deprecated
+ */
 class IntBoundsParam : public NodePropertyParams
 {
     public:
@@ -36,6 +43,11 @@ class IntBoundsParam : public NodePropertyParams
         int max;
 };
 
+/**
+ * @class FloatBoundsParam
+ * @brief Used for designing bounds on properties. It is deprecated and should not be used as it is going to be deleted soon.
+ * @deprecated
+ */
 class FloatBoundsParam : public NodePropertyParams
 {
     public:
@@ -51,49 +63,81 @@ class FloatBoundsParam : public NodePropertyParams
 
 /**
  * @class NodeProperty
- * @brief Creates an editable property for nodes. Recommended to use the abstracted functions to create and manage it.
- * @param node The node which the property is going to be added to.
- * @param initialValue The initial value of the property.
+ * @brief Base class for node properties.
+ * @param name Name of the property.
  */
 class NodeProperty
 {
     public:
-        NodeProperty(Node* node, PropertyType type, void* initialValue) :
+        NodeProperty(std::string name) :
+            name(name)
+        {
+        };
+        
+        virtual ~NodeProperty()
+        {
+        };
+
+        virtual void SetName(std::string newName)
+        {
+            name = newName;
+        }
+
+        virtual std::string GetName()
+        {
+            return name;
+        }
+
+        std::string name;
+        PropertyType type;
+};
+
+/**
+ * @class IntNodeProperty
+ * @brief Creates an editable int property for nodes. Remplaces the deprecated NodeProperty class.
+ * @param node The node which the property is going to be added to.
+ * @param initialValue The initial value of the property.
+ * @param min Minimum value of the property.
+ * @param max Maximum value of the property.
+ */
+class IntNodeProperty : public NodeProperty
+{
+    public:
+        IntNodeProperty(Node* node, std::string name, int initialValue, int min, int max) :
+            NodeProperty(name),
             node(node),
-            type(type),
+            min(min),
+            max(max),
             value(initialValue)
         {
+            this->type = PropertyType::INT;
         }
 
-        ~NodeProperty()
+        virtual ~IntNodeProperty()
         {
-            switch (this->type)
-            {
-            case PropertyType::INT:
-                delete static_cast<int*>(value);
-                break;
-            case PropertyType::FLOAT:
-                delete static_cast<float*>(value);
-                break;
-            // TODO: Add support for PropertyType::STRING
-            default:
-                break;
-            }
-        }
+        };
 
-        void SetValue(void* value)
-        {
-            this->value = value;
-        }
-
-        void* GetValue()
+        int GetValue()
         {
             return value;
         }
 
-        void SetName(std::string name)
+        void SetValue(int newValue)
         {
-            this->name = name;
+            if (newValue < min)
+            {
+                value = min;
+            }
+            else if (newValue > max)
+            {
+                value = max;
+            }
+            else
+            {
+                value = newValue;
+            }
+
+            OnValueChanged();
         }
 
         void OnValueChanged()
@@ -101,19 +145,53 @@ class NodeProperty
             node->SetDirty();
         }
 
-        std::string GetName()
-        {
-            return name;
-        }
+        int min, max;
+        int value;
 
         Node* node;
+};
 
-        PropertyType type;
-        void* value;
+/**
+ * @class IntNodeProperty
+ * @brief Creates an editable int property for nodes. Remplaces the deprecated NodeProperty class.
+ * @param node The node which the property is going to be added to.
+ * @param initialValue The initial value of the property.
+ * @param min Minimum value of the property.
+ * @param max Maximum value of the property.
+ */
+class ImageNodeProperty : public NodeProperty
+{
+    public:
+        ImageNodeProperty(Node* node, std::string name) :
+            NodeProperty(name),
+            node(node)
+        {
+            this->type = PropertyType::IMAGE;
+        }
 
-        std::map<std::string, std::shared_ptr<NodePropertyParams>> params;
+        virtual ~ImageNodeProperty()
+        {
+        };
 
-        std::string name;
+        std::shared_ptr<Image> GetValue()
+        {
+            return image;
+        }
+
+        void SetValue(std::shared_ptr<Image> newImage)
+        {
+            image = newImage;
+            OnValueChanged();
+        }
+
+        void OnValueChanged()
+        {
+            node->SetDirty();
+        }
+
+        std::shared_ptr<Image> image;
+
+        Node* node;
 };
 
 /**
@@ -136,7 +214,7 @@ inline std::shared_ptr<IntBoundsParam> GetIntBounds(std::shared_ptr<NodeProperty
 {
     if (IsPropertyType(property, PropertyType::INT))
     {
-        return std::dynamic_pointer_cast<IntBoundsParam>(property->params["bounds"]);
+        return std::make_shared<IntBoundsParam>(static_cast<IntNodeProperty*>(property.get())->min, static_cast<IntNodeProperty*>(property.get())->max);
     }
 
     return nullptr;
@@ -149,15 +227,25 @@ inline std::shared_ptr<IntBoundsParam> GetIntBounds(std::shared_ptr<NodeProperty
  * @param initialValue The initial value of the property.
  * @param min Minimum value of the property.
  * @param max Maximum value of the property.
- * @return A shared pointer to the IntBoundsParam that cointains the bounds of the int, or nullptr if property is not an Int
+ * @return A shared pointer to the IntNodeProperty
  */
-inline std::shared_ptr<NodeProperty> CreateIntNodeProperty(Node* node, std::string name, int initialValue, int min, int max)
+inline std::shared_ptr<IntNodeProperty> CreateIntNodeProperty(Node* node, std::string name, int initialValue, int min, int max)
 {
     int* value = new int(initialValue);
-    auto property = std::make_shared<NodeProperty>(node, PropertyType::INT, (void*)value);
+    auto property = std::make_shared<IntNodeProperty>(node, name, initialValue, min, max);
 
-    property->SetName(name);
-    property->params["bounds"] = std::make_shared<IntBoundsParam>(min, max);
+    return property;
+}
+
+/**
+ * @brief Creates an Image node property.
+ * @param node The node which the property is going to be applied.
+ * @param name The visual name of the Property.
+ * @return A shared pointer to the ImageNodeProperty
+ */
+inline std::shared_ptr<NodeProperty> CreateImageNodeProperty(Node* node, std::string name)
+{
+    auto property = std::make_shared<ImageNodeProperty>(node, name);
 
     return property;
 }

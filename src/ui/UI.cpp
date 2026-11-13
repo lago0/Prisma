@@ -7,6 +7,8 @@
 #include "window/NodeViewer/NodeViewer.h"
 #include "window/Inspector/Inspector.h"
 #include "ui/window/NodeViewer/NodeView.h"
+#include "ui/window/ImageGalleryWindow/ImageGalleryWindow.h"
+#include "ui/dialogs/SelectImageDialog.h"
 
 #include "util/Time.h"
 
@@ -19,6 +21,10 @@ UI::UI::UI(SDL_Window* main_window, SDL_Renderer* renderer, Core* core) :
     onLayerSelectedChange(new Util::Signal<Layer*>()),
     onEvent(new Util::Signal<SDL_Event*>())
 {
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    boldFont = io.Fonts->AddFontFromFileTTF("assets/Mulish-Bold.ttf", 15.0f);
+    titleFont = io.Fonts->AddFontFromFileTTF("assets/Mulish-Medium.ttf", 20.0f);
+
     std::shared_ptr<Window> window = std::make_shared<TestWindow>(this);
 
     OpenWindow(window);
@@ -34,11 +40,30 @@ UI::UI::UI(SDL_Window* main_window, SDL_Renderer* renderer, Core* core) :
     window = std::make_shared<Inspector>(this);
 
     OpenWindow(window);
+
+    window = std::make_shared<ImageGalleryWindow>(this);
+
+    OpenWindow(window);
+
+    selectImageDialog = new SelectImageDialog(this, core);
+    selectImageDialog->Open();
+    
+    selectImageDialog->optionSelectedSignal->Connect([&]() {
+        std::cout << "Cancelled: " << selectImageDialog->cancelled << std::endl;
+        
+        if (!selectImageDialog->cancelled)
+        {
+            std::cout << "ImageSelected Id: " << selectImageDialog->imageIdSelected << std::endl;
+        }
+    });
 }
 
 UI::UI::~UI()
 {
-    delete onLayerSelectedChange, onEvent;
+    delete onLayerSelectedChange;
+    delete onEvent;
+
+    delete selectImageDialog;
 }
 
 Core* UI::UI::GetCore()
@@ -63,6 +88,11 @@ void UI::UI::Update()
 // Renders all visible windows
 void UI::UI::Render()
 {
+    if (selectImageDialog)
+    {
+        selectImageDialog->Render();
+    }
+
     for (std::shared_ptr<Window>& window : currentWindows)
     {
         window->Render();

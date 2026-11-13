@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
 #include <cmath>
 
-#include <SDL3/SDL.h>
-#include <imgui.h>
-#include <imgui_impl_sdl3.h>
-#include <imgui_impl_sdlrenderer3.h>
-
 #include "core/Core.h"
 
 #define USE_UI
@@ -15,6 +10,47 @@
 #endif
 
 #ifdef USE_UI
+
+#include <SDL3/SDL.h>
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlrenderer3.h>
+
+#include <imgui_freetype.h>
+
+void SetupStyles()
+{
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 5;
+    style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
+    style.FrameRounding = 40;
+    style.FontScaleDpi = 1.1;
+    style.WindowPadding = ImVec2(5,5);
+    style.PopupRounding = 5;
+    style.PopupBorderSize = 0;
+    style.SelectableRounding = 5;
+    style.AntiAliasedFill = true;
+    style.AntiAliasedLines = true;
+    style.AntiAliasedLinesUseTex = true;
+    
+    style.Colors[ImGuiCol_Button] = ImVec4(0.08f, 0.50f, 0.7f, 1.0f);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.2f, 0.2f, 0.2f, 0.5f);
+
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImFontConfig font_config;
+
+    font_config.OversampleH = 3; 
+    font_config.OversampleV = 1;
+
+    font_config.RasterizerMultiply = 1.1f; 
+
+    ImFont* polished_font = io.Fonts->AddFontFromFileTTF("assets/Mulish-Medium.ttf", 15.0f, &font_config);
+
+    io.Fonts->SetFontLoader(ImGuiFreeType::GetFontLoader());
+    io.Fonts->FontLoaderFlags = ImGuiFreeTypeLoaderFlags_LightHinting | ImGuiFreeTypeLoaderFlags_Bold;
+}
+
 int InitUI(Core* core)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) 
@@ -49,7 +85,7 @@ int InitUI(Core* core)
 
     ImGui::StyleColorsDark();
 
-    ImGuiStyle& style = ImGui::GetStyle();
+    /*ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = 5;
     style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
     style.FrameRounding = 5;
@@ -57,7 +93,9 @@ int InitUI(Core* core)
     style.WindowPadding = ImVec2(5,5);
     style.PopupRounding = 5;
     style.PopupBorderSize = 0;
-    style.SelectableRounding = 5;
+    style.SelectableRounding = 5;*/
+
+    SetupStyles();
 
     ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer3_Init(renderer);

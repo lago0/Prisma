@@ -64,6 +64,7 @@ project(Prisma)
 
 find_package(SDL3 REQUIRED)
 find_package(OpenCV 4 REQUIRED)
+find_package(Freetype REQUIRED)
 
 file(GLOB_RECURSE PRISMA_SOURCES 
     "src/*.cpp"
@@ -79,6 +80,7 @@ set(IMGUI_SOURCES
     lib/imgui_demo.cpp
     lib/imgui_impl_sdl3.cpp
     lib/imgui_impl_sdlrenderer3.cpp
+    lib/imgui_freetype.cpp
 )
 
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -91,4 +93,14 @@ target_include_directories(Prisma PRIVATE
     ${CMAKE_SOURCE_DIR}/lib
 )
 
-target_link_libraries(Prisma PRIVATE SDL3::SDL3 ${OpenCV_LIBS})
+target_link_libraries(Prisma PRIVATE 
+    SDL3::SDL3 
+    ${OpenCV_LIBS}
+    Freetype::Freetype
+)
+
+add_custom_command(TARGET Prisma POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/src/assets"
+    "${CMAKE_CURRENT_BINARY_DIR}/assets"
+)
